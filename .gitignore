@@ -1,0 +1,13 @@
+# User specific
+*.suo
+*.user
+
+# Build results
+**/bin
+**/obj
+
+# NuGet Packages
+*.nupkg
+
+# Visual Studio stuff
+.vs/
