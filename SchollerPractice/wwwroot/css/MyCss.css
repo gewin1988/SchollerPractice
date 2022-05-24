@@ -1,0 +1,11 @@
+﻿
+.my-header-h3{
+    color: black;
+}
+
+.passed {
+    color: green;
+}
+.failed {
+    color: red;
+}
