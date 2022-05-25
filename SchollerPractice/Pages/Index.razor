@@ -5,7 +5,7 @@
 
 
 <h1>Take your quiz!</h1>
-<p>Your current score is @currentScore</p>
+<p>Your current score is @currentScore / @maxScore</p>
 
 @if (quiz == null)
 {
@@ -39,7 +39,7 @@ else
             {
                 <label for="@quizIndex">@choice</label>
             }
-            <input class="form-check-input" style="margin-left:0.5rem;" type="radio" name="@quizIndex" value="@choiceIndex" @onchange="@((eventArgs) => UpdateScore(Convert.ToInt32(eventArgs.Value), currentQuizIndex))" />
+            <input class="form-check-input" style="margin-left:0.5rem;" type="radio" name="@quizIndex" value="@choiceIndex" @onchange="@((eventArgs) => UpdateScore(eventArgs.Value.ToString(), currentQuizIndex))" />
 
 
             <br />
@@ -58,19 +58,24 @@ else
     List<QuizItem> quiz;
     List<int> quizScores = new List<int>();
     int currentScore = 0;
+    int maxScore = 0;
 
     string headerClass = "my-header-h3";
 
     protected override async Task OnInitializedAsync()
     {
-        quiz = await QuizRepository.GetQuizAsync();
+        var list = await QuizRepository.GetQuizAsync();
+        var rnd = new Random();
+        quiz = (list.OrderBy(item => rnd.Next())).ToList();
+        maxScore = quiz.Count;
+
     }
 
-    void UpdateScore(int chosenAnswerIndex, int quizIndex)
+    void UpdateScore(string chosenAnswer, int quizIndex)
     {
         var quizItem = quiz[quizIndex];
-
-        if (chosenAnswerIndex == quizItem.AnswerIndex)
+        Console.WriteLine("ChosenAnswer = " + chosenAnswer + " - quizIndex = " + quizIndex);
+        if (quizItem.Choices.ElementAt( Convert.ToInt32(chosenAnswer)) == quizItem.Answer)
         {
             quizScores[quizIndex] = quizItem.Score;
         }
@@ -92,7 +97,9 @@ else
             else
                 quizItem.ResultClass = "failed";
         }
+        maxScore = quiz.Count;
         currentScore = quizScores.Sum();
+
         headerClass = "failed";
     }
 }
